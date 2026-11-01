@@ -28,16 +28,22 @@ Every strategy is judged against gate criteria fixed **before** the run:
 | Max drawdown | < 25% |
 | Profit factor | > 1.3 |
 
-If a strategy fails, its parameters are **not** tuned to make it pass. The next step is a new hypothesis, tested separately. Sharpe ratio is reported for reference only and is not a gate, because crypto returns have heavy tails.
+If a strategy fails, its parameters are **not** tuned to make it pass. The next step is a new hypothesis, tested separately. Sharpe ratio is reported for reference only and is not a gate, because crypto returns have heavy tails (excess kurtosis ≈ 8).
+
+Every decision, measurement and dead end is logged in [`docs/trading_decisions.md`](docs/trading_decisions.md) (in Ukrainian), including the ones that turned out wrong. Two examples:
+- **Stopping rule declared in advance.** After 0 of 18 entry candidates showed a significant MFE−MAE shift on 4h data, the rule was: one more test on daily data, and if that also fails, stop searching for edge in price-derived indicators. No "let's try 8h, then 12h".
+- **A subtle lookahead bug found and fixed.** The momentum threshold's rolling window included the current bar, so a value took part in setting its own threshold. It was fixed with `shift(1)` before `rolling()` and verified with a truncation test (0 mismatches across 1,385 bars). The result moved only slightly (PF 4.96 → 4.44), which shows the finding did not depend on the bug.
 
 ## Results (exploration set only)
 
 | Strategy | Data | Return | Max DD | Profit factor | Trades | Buy & hold return / DD | Gate |
 |---|---|---|---|---|---|---|---|
 | EMA cross (engine test bench) | BTC 4h, 2021–2023 | −0.6% | 16.7% | 0.98 | 35 | +46% / 77% | ❌ |
-| Momentum-30 | BTC 1d, 2017–2023 | +144% | 12.3% | 4.44 | 58 | +892% / 83% | ❌ (fails only "beats B&H") |
+| Momentum-30 | BTC 1d, 2017–2023 | +144% | 12.3% | 4.44 | 58 | +478% / 77% ¹ | ❌ (fails only "beats B&H") |
 
-Momentum-30 enters when the 30-day log return rises into the top tercile of its own trailing one-year distribution, with the threshold computed strictly from **past** bars. It is in the market ~32% of the time. It has a far better risk profile than holding BTC (Calmar 1.22 vs 0.52; CAGR 15% vs 43%), but it does not beat buy-and-hold on return, so by the rules it does not pass. Full reports and trade logs are in [`results/`](results/).
+Momentum-30 enters when the 30-day log return rises into the top tercile of its own trailing one-year distribution, with the threshold computed strictly from **past** bars. It is in the market ~32% of the time. It has a far better risk profile than holding BTC (Calmar 1.22 vs 0.52), but it does not beat buy-and-hold on return, so by the rules it does not pass. Robustness caveats are stated openly: the top 3 trades make up 66% of net P&L, so the result effectively rests on about 10 events. Full reports and trade logs are in [`results/`](results/).
+
+¹ Buy-and-hold measured from the strategy's first possible entry (2018-07-18), since the 282-bar warm-up cannot trade. From the very start of the data (2017-08-17) it is +892% / 83% DD, which is the figure in the report file.
 
 The holdout set has not been touched.
 

@@ -78,7 +78,7 @@ DEFAULT_MIN_NOTIONAL: float = 5.0
 
 # --- Бектест: витрати та капітал (src/bot/backtesting/engine.py) ---
 # Джерело правди — docs/trading_decisions.md, розділ "Бектест".
-INITIAL_BALANCE: float = 150.0     # стартовий баланс бектесту, USDT — реальний баланс проекту
+INITIAL_BALANCE: float = 150.0     # стартовий баланс бектесту, USDT
 COMMISSION_PCT: float = 0.001      # комісія біржі 0.1% НА КОЖНУ СТОРОНУ (taker, без знижки BNB)
 BASE_SLIPPAGE_PCT: float = 0.0005  # базовий рівень slippage (0.05%) при "нормальній" волатильності
 SLIPPAGE_CAP_MULT: float = 3.0     # кеп множника slippage: ефективний slippage <= BASE_SLIPPAGE_PCT × 3

@@ -43,7 +43,7 @@ Every decision, measurement and dead end is logged in [`docs/trading_decisions.m
 | EMA cross (engine test bench) | BTC 4h, 2021–2023 | −0.6% | 16.7% | 0.98 | 35 | +46% / 77% | ❌ |
 | Momentum-30 | BTC 1d, 2017–2023 | +144% | 12.3% | 4.44 | 58 | +478% / 77% ¹ | ❌ (fails only "beats B&H") |
 
-Momentum-30 enters when the 30-day log return rises into the top tercile of its own trailing one-year distribution, with the threshold computed strictly from **past** bars. It is in the market ~32% of the time. It has a far better risk profile than holding BTC (Calmar 1.22 vs 0.52), but it does not beat buy-and-hold on return, so by the rules it does not pass. Robustness caveats are stated openly: the top 3 trades make up 66% of net P&L, so the result effectively rests on about 10 events. Full reports and trade logs are in [`results/`](results/).
+Momentum-30 enters when the 30-day log return rises into the top tercile of its own trailing one-year distribution, with the threshold computed strictly from **past** bars. It is in the market ~32% of the time. It has a far better risk profile than holding BTC (Calmar 1.44 vs 0.50 over the aligned period ¹), but it does not beat buy-and-hold on return, so by the rules it does not pass. Robustness caveats are stated openly: the top 3 trades make up 66% of net P&L, so the result effectively rests on about 10 events. Full reports and trade logs are in [`results/`](results/).
 
 ¹ Buy-and-hold measured from the strategy's first possible entry (2018-07-18), since the 282-bar warm-up cannot trade. From the very start of the data (2017-08-17) it is +892% / 83% DD, which is the figure in the report file.
 

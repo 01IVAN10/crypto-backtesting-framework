@@ -185,67 +185,67 @@ def _print_report(
     yearly = _yearly_pnl(trades)
     time_in_market = _time_in_market_pct(trades, total_bars=len(df))
 
-    yearly_lines = ["--- Порічна розбивка P&L (net, USDT, за роком ВИХОДУ з угоди) ---"]
+    yearly_lines = ["--- P&L by year (net, USDT, by trade EXIT year) ---"]
     if yearly.empty:
-        yearly_lines.append("  (угод немає)")
+        yearly_lines.append("  (no trades)")
     else:
         for year, pnl in yearly.items():
-            marker = " <-- обов'язковий рік (docs, очікуємо помітний мінус у 2022)" if year == 2022 else ""
-            in_range = "" if YEARLY_BREAKDOWN_RANGE[0] <= year <= YEARLY_BREAKDOWN_RANGE[1] else "  (поза 2019-2023)"
+            marker = " <-- pre-registered expectation: a visible loss in 2022 (bear year)" if year == 2022 else ""
+            in_range = "" if YEARLY_BREAKDOWN_RANGE[0] <= year <= YEARLY_BREAKDOWN_RANGE[1] else "  (outside 2019-2023)"
             yearly_lines.append(f"  {year}: {pnl:>10.4f} USDT{in_range}{marker}")
         missing_years = [
             y for y in range(YEARLY_BREAKDOWN_RANGE[0], YEARLY_BREAKDOWN_RANGE[1] + 1)
             if y not in yearly.index
         ]
         if missing_years:
-            yearly_lines.append(f"  (без угод: {missing_years} — нуль трейдів у цьому році, не помилка)")
+            yearly_lines.append(f"  (no trades in: {missing_years} — zero trades that year, not an error)")
 
     lines = [
         "=" * 70,
-        f"ЗВІТ БЕКТЕСТУ — стратегія: {strategy_name} (ПЕРША НЕ-ТЕСТОВА СТРАТЕГІЯ)",
-        "Набір даних: EXPLORATION ONLY (btc_1d_exploration.csv, денний таймфрейм)",
-        f"Період: {start_time} -> {end_time} ({len(df)} денних барів)",
-        "Параметри НЕ підбирались — один зафіксований наперед прогін.",
+        f"BACKTEST REPORT — strategy: {strategy_name} (first non-test strategy)",
+        "Dataset: EXPLORATION ONLY (btc_1d_exploration.csv, daily timeframe)",
+        f"Period: {start_time} -> {end_time} ({len(df)} daily bars)",
+        "Parameters were NOT tuned: a single run, fixed in advance.",
         "=" * 70,
         "",
-        "--- Метрики стратегії ---",
+        "--- Strategy metrics ---",
         f"Total return:          {result_metrics['total_return']:>10.2%}",
         f"Final equity:           {result_metrics['final_equity']:>10.2f} USDT",
         f"Max drawdown:           {result_metrics['max_drawdown']:>10.2%}",
         f"Profit factor:          {result_metrics['profit_factor']:>10.2f}",
-        f"Кількість угод:         {int(result_metrics['trades_count']):>10d}",
-        f"Пропущено (below_min_notional): {skipped_min_notional_count:>3d}",
+        f"Trades:                 {int(result_metrics['trades_count']):>10d}",
+        f"Skipped (below_min_notional):   {skipped_min_notional_count:>3d}",
         f"Win rate:               {result_metrics['win_rate']:>10.2%}",
-        f"Середній виграш:        {result_metrics['avg_win']:>10.4f} USDT",
-        f"Середній програш:       {result_metrics['avg_loss']:>10.4f} USDT",
-        f"Sharpe (довідковий,     {result_metrics['sharpe_ratio_informational_only']:>10.2f}   "
-        f"НЕ gate-критерій, анулізовано під 365 барів/рік для 1d)",
-        f"Частка часу в ринку:    {time_in_market:>10.2%}  (орієнтир з виміру придатності ~36%,"
-        f" на ковзному порозі може відрізнятись)",
+        f"Average win:            {result_metrics['avg_win']:>10.4f} USDT",
+        f"Average loss:           {result_metrics['avg_loss']:>10.4f} USDT",
+        f"Sharpe (reference)      {result_metrics['sharpe_ratio_informational_only']:>10.2f}   "
+        f"NOT a gate criterion; annualised at 365 bars/year for 1d",
+        f"Time in market:         {time_in_market:>10.2%}  (fitness study estimate ~36%;"
+        f" may differ with the rolling threshold)",
         "",
-        "--- Calmar (CAGR / max drawdown) — довідково, не gate ---",
-        f"Стратегія:   CAGR={strategy_cagr:>8.2%}  MaxDD={result_metrics['max_drawdown']:>7.2%}  Calmar={strategy_calmar:>7.2f}",
+        "--- Calmar (CAGR / max drawdown) — reference, not a gate ---",
+        f"Strategy:     CAGR={strategy_cagr:>8.2%}  MaxDD={result_metrics['max_drawdown']:>7.2%}  Calmar={strategy_calmar:>7.2f}",
         f"Buy-and-hold: CAGR={benchmark_cagr:>8.2%}  MaxDD={benchmark['max_drawdown']:>7.2%}  Calmar={benchmark_calmar:>7.2f}",
         "",
         *yearly_lines,
         "",
-        "--- Бенчмарк: buy-and-hold BTC (той самий період) ---",
+        "--- Benchmark: buy-and-hold BTC (same period) ---",
         f"Total return (B&H):     {benchmark['total_return']:>10.2%}",
         f"Final equity (B&H):     {benchmark['final_equity']:>10.2f} USDT",
         f"Max drawdown (B&H):     {benchmark['max_drawdown']:>10.2%}",
         "",
-        "--- Gate-критерії (docs/trading_decisions.md) ---",
-        f"[{'OK' if beats_benchmark else 'FAIL'}] Перевершує buy-and-hold BTC",
-        f"[{'OK' if gate_trades else 'FAIL'}] Кількість угод >= 30 (фактично: {int(result_metrics['trades_count'])})",
-        f"[{'OK' if gate_drawdown else 'FAIL'}] Max drawdown < 25% (фактично: {result_metrics['max_drawdown']:.2%})",
-        f"[{'OK' if gate_profit_factor else 'FAIL'}] Profit factor > 1.3 (фактично: {result_metrics['profit_factor']:.2f})",
+        "--- Gate criteria (docs/trading_decisions.md) ---",
+        f"[{'OK' if beats_benchmark else 'FAIL'}] Beats buy-and-hold BTC",
+        f"[{'OK' if gate_trades else 'FAIL'}] Number of trades >= 30 (actual: {int(result_metrics['trades_count'])})",
+        f"[{'OK' if gate_drawdown else 'FAIL'}] Max drawdown < 25% (actual: {result_metrics['max_drawdown']:.2%})",
+        f"[{'OK' if gate_profit_factor else 'FAIL'}] Profit factor > 1.3 (actual: {result_metrics['profit_factor']:.2f})",
         "",
-        f"РЕЗУЛЬТАТ: {'ВСІ GATE-КРИТЕРІЇ ПРОЙДЕНО' if gate_all_passed else 'GATE-КРИТЕРІЇ НЕ ПРОЙДЕНО'}"
+        f"RESULT: {'ALL GATE CRITERIA PASSED' if gate_all_passed else 'GATE CRITERIA NOT PASSED'}"
         + (
             ""
             if gate_all_passed
-            else " — параметри НЕ підганяються; якщо не проходить, повертаємось до "
-            "EDA/гіпотез окремим кроком, а не змінюємо ці числа заднім числом."
+            else " — parameters are NOT tuned; a failed strategy means a new hypothesis "
+            "as a separate step, not changing these numbers after the fact."
         ),
         "=" * 70,
     ]

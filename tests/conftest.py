@@ -3,9 +3,8 @@ tests/conftest.py
 
 Додає корінь проекту та src/ у sys.path, щоб `import config.settings`
 і `import bot.risk.risk_manager` працювали незалежно від того, звідки
-запущено pytest. Тимчасове рішення до появи editable-інсталяції пакета
-через pyproject.toml (`pip install -e .`), про яку йдеться в
-docs/tech_stack.md.
+запущено pytest — і без `pip install -e .` (наприклад, у CI після
+`pip install -r requirements.txt`).
 """
 
 import sys

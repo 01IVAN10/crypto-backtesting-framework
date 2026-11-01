@@ -1,5 +1,7 @@
 # Crypto Strategy Backtesting Framework
 
+[![tests](https://github.com/01IVAN10/crypto-backtesting-framework/actions/workflows/tests.yml/badge.svg)](https://github.com/01IVAN10/crypto-backtesting-framework/actions/workflows/tests.yml)
+
 A research framework for testing trading hypotheses on Binance spot data honestly. It is built to answer "does this idea survive realistic execution?", not "how do I make the curve look good?".
 
 > **Status:** research and backtesting only. There is no live order execution: `src/bot/execution/` is intentionally empty, and no strategy has passed the pre-registered gate criteria yet.
@@ -44,6 +46,8 @@ Every decision, measurement and dead end is logged in [`docs/trading_decisions.m
 Momentum-30 enters when the 30-day log return rises into the top tercile of its own trailing one-year distribution, with the threshold computed strictly from **past** bars. It is in the market ~32% of the time. It has a far better risk profile than holding BTC (Calmar 1.22 vs 0.52), but it does not beat buy-and-hold on return, so by the rules it does not pass. Robustness caveats are stated openly: the top 3 trades make up 66% of net P&L, so the result effectively rests on about 10 events. Full reports and trade logs are in [`results/`](results/).
 
 ¹ Buy-and-hold measured from the strategy's first possible entry (2018-07-18), since the 282-bar warm-up cannot trade. From the very start of the data (2017-08-17) it is +892% / 83% DD, which is the figure in the report file.
+
+The EMA-cross run predates the extension of the exploration history back to 2017, so re-running `scripts/backtest.py` today uses 2017–2023 data and gives different numbers. The Momentum-30 report reproduces exactly (identical trade log).
 
 The holdout set has not been touched.
 
@@ -97,7 +101,7 @@ python scripts/backtest.py            # EMA cross on BTC 4h
 python scripts/backtest_momentum.py   # Momentum-30 on BTC 1d
 ```
 
-Python 3.12, pandas, numpy, ccxt, pytest.
+Python 3.12, pandas, numpy, ccxt, pytest. Tests run on GitHub Actions on every push.
 
 ---
 

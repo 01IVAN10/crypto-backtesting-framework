@@ -1,45 +1,45 @@
 ======================================================================
-ЗВІТ БЕКТЕСТУ — стратегія: momentum_30 (ПЕРША НЕ-ТЕСТОВА СТРАТЕГІЯ)
-Набір даних: EXPLORATION ONLY (btc_1d_exploration.csv, денний таймфрейм)
-Період: 2017-08-17 00:00:00+00:00 -> 2023-12-31 00:00:00+00:00 (2328 денних барів)
-Параметри НЕ підбирались — один зафіксований наперед прогін.
+BACKTEST REPORT — strategy: momentum_30 (first non-test strategy)
+Dataset: EXPLORATION ONLY (btc_1d_exploration.csv, daily timeframe)
+Period: 2017-08-17 00:00:00+00:00 -> 2023-12-31 00:00:00+00:00 (2328 daily bars)
+Parameters were NOT tuned: a single run, fixed in advance.
 ======================================================================
 
---- Метрики стратегії ---
+--- Strategy metrics ---
 Total return:             144.08%
 Final equity:               366.12 USDT
 Max drawdown:               12.33%
 Profit factor:                4.44
-Кількість угод:                 58
-Пропущено (below_min_notional):   0
+Trades:                         58
+Skipped (below_min_notional):     0
 Win rate:                   46.55%
-Середній виграш:           10.3319 USDT
-Середній програш:          -2.0271 USDT
-Sharpe (довідковий,           1.22   НЕ gate-критерій, анулізовано під 365 барів/рік для 1d)
-Частка часу в ринку:        32.00%  (орієнтир з виміру придатності ~36%, на ковзному порозі може відрізнятись)
+Average win:               10.3319 USDT
+Average loss:              -2.0271 USDT
+Sharpe (reference)            1.22   NOT a gate criterion; annualised at 365 bars/year for 1d
+Time in market:             32.00%  (fitness study estimate ~36%; may differ with the rolling threshold)
 
---- Calmar (CAGR / max drawdown) — довідково, не gate ---
-Стратегія:   CAGR=  15.03%  MaxDD= 12.33%  Calmar=   1.22
+--- Calmar (CAGR / max drawdown) — reference, not a gate ---
+Strategy:     CAGR=  15.03%  MaxDD= 12.33%  Calmar=   1.22
 Buy-and-hold: CAGR=  43.36%  MaxDD= 83.19%  Calmar=   0.52
 
---- Порічна розбивка P&L (net, USDT, за роком ВИХОДУ з угоди) ---
-  2018:   -12.7207 USDT  (поза 2019-2023)
+--- P&L by year (net, USDT, by trade EXIT year) ---
+  2018:   -12.7207 USDT  (outside 2019-2023)
   2019:    66.1172 USDT
   2020:    47.7409 USDT
   2021:    30.5449 USDT
-  2022:   -11.5258 USDT <-- обов'язковий рік (docs, очікуємо помітний мінус у 2022)
+  2022:   -11.5258 USDT <-- pre-registered expectation: a visible loss in 2022 (bear year)
   2023:    95.9666 USDT
 
---- Бенчмарк: buy-and-hold BTC (той самий період) ---
+--- Benchmark: buy-and-hold BTC (same period) ---
 Total return (B&H):        892.23%
 Final equity (B&H):        1488.34 USDT
 Max drawdown (B&H):         83.19%
 
---- Gate-критерії (docs/trading_decisions.md) ---
-[FAIL] Перевершує buy-and-hold BTC
-[OK] Кількість угод >= 30 (фактично: 58)
-[OK] Max drawdown < 25% (фактично: 12.33%)
-[OK] Profit factor > 1.3 (фактично: 4.44)
+--- Gate criteria (docs/trading_decisions.md) ---
+[FAIL] Beats buy-and-hold BTC
+[OK] Number of trades >= 30 (actual: 58)
+[OK] Max drawdown < 25% (actual: 12.33%)
+[OK] Profit factor > 1.3 (actual: 4.44)
 
-РЕЗУЛЬТАТ: GATE-КРИТЕРІЇ НЕ ПРОЙДЕНО — параметри НЕ підганяються; якщо не проходить, повертаємось до EDA/гіпотез окремим кроком, а не змінюємо ці числа заднім числом.
+RESULT: GATE CRITERIA NOT PASSED — parameters are NOT tuned; a failed strategy means a new hypothesis as a separate step, not changing these numbers after the fact.
 ======================================================================

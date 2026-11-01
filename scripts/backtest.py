@@ -120,6 +120,7 @@ def _print_report(
     metrics: dict[str, float],
     benchmark: dict[str, float],
     skipped_min_notional_count: int,
+    period: str,
 ) -> str:
     """Формує текстовий звіт бектесту (лог + повернене значення для збереження у файл)."""
     beats_benchmark = metrics["total_return"] > benchmark["total_return"]
@@ -130,43 +131,43 @@ def _print_report(
 
     lines = [
         "=" * 70,
-        f"ЗВІТ БЕКТЕСТУ — стратегія: {strategy_name}",
-        "Набір даних: EXPLORATION ONLY (btc_4h_exploration.csv, 2021-01-01 -> 2023-12-31)",
+        f"BACKTEST REPORT — strategy: {strategy_name}",
+        f"Dataset: EXPLORATION ONLY (btc_4h_exploration.csv, {period})",
         "=" * 70,
         "",
-        "--- Метрики стратегії ---",
+        "--- Strategy metrics ---",
         f"Total return:        {metrics['total_return']:>10.2%}",
         f"Final equity:         {metrics['final_equity']:>10.2f} USDT",
         f"Max drawdown:         {metrics['max_drawdown']:>10.2%}",
         f"Profit factor:        {metrics['profit_factor']:>10.2f}",
-        f"Кількість угод:       {int(metrics['trades_count']):>10d}",
+        f"Trades:               {int(metrics['trades_count']):>10d}",
         f"Win rate:             {metrics['win_rate']:>10.2%}",
-        f"Середній виграш:      {metrics['avg_win']:>10.4f} USDT",
-        f"Середня програш:      {metrics['avg_loss']:>10.4f} USDT",
-        f"Sharpe (довідковий,   {metrics['sharpe_ratio_informational_only']:>10.2f}   "
-        f"НЕ gate-критерій — важкі хвости розподілу, Sharpe оптимістичний)",
+        f"Average win:          {metrics['avg_win']:>10.4f} USDT",
+        f"Average loss:         {metrics['avg_loss']:>10.4f} USDT",
+        f"Sharpe (reference)    {metrics['sharpe_ratio_informational_only']:>10.2f}   "
+        f"NOT a gate criterion: heavy-tailed returns make Sharpe optimistic",
         "",
-        "--- Бенчмарк: buy-and-hold BTC (той самий період) ---",
+        "--- Benchmark: buy-and-hold BTC (same period) ---",
         f"Total return (B&H):   {benchmark['total_return']:>10.2%}",
         f"Final equity (B&H):   {benchmark['final_equity']:>10.2f} USDT",
         f"Max drawdown (B&H):   {benchmark['max_drawdown']:>10.2%}",
         "",
-        "--- Чесність виконання ---",
-        f"Пропущено угод (below_min_notional): {skipped_min_notional_count}",
+        "--- Execution honesty ---",
+        f"Skipped trades (below_min_notional): {skipped_min_notional_count}",
         "",
-        "--- Gate-критерії (docs/trading_decisions.md) ---",
-        f"[{'OK' if beats_benchmark else 'FAIL'}] Перевершує buy-and-hold BTC",
-        f"[{'OK' if gate_trades else 'FAIL'}] Кількість угод >= 30 (фактично: {int(metrics['trades_count'])})",
-        f"[{'OK' if gate_drawdown else 'FAIL'}] Max drawdown < 25% (фактично: {metrics['max_drawdown']:.2%})",
-        f"[{'OK' if gate_profit_factor else 'FAIL'}] Profit factor > 1.3 (фактично: {metrics['profit_factor']:.2f})",
+        "--- Gate criteria (docs/trading_decisions.md) ---",
+        f"[{'OK' if beats_benchmark else 'FAIL'}] Beats buy-and-hold BTC",
+        f"[{'OK' if gate_trades else 'FAIL'}] Number of trades >= 30 (actual: {int(metrics['trades_count'])})",
+        f"[{'OK' if gate_drawdown else 'FAIL'}] Max drawdown < 25% (actual: {metrics['max_drawdown']:.2%})",
+        f"[{'OK' if gate_profit_factor else 'FAIL'}] Profit factor > 1.3 (actual: {metrics['profit_factor']:.2f})",
         "",
-        f"РЕЗУЛЬТАТ: {'ВСІ GATE-КРИТЕРІЇ ПРОЙДЕНО' if gate_all_passed else 'GATE-КРИТЕРІЇ НЕ ПРОЙДЕНО'}"
+        f"RESULT: {'ALL GATE CRITERIA PASSED' if gate_all_passed else 'GATE CRITERIA NOT PASSED'}"
         + (
             ""
             if gate_all_passed
-            else " — це нормальний результат для baseline-стенду; "
-            "не підганяємо параметри, повертаємось до EDA/гіпотез, якщо мета — не лише "
-            "перевірка коректності двигуна."
+            else " — expected for a baseline test bench. "
+            "Parameters are not tuned; next step is new EDA/hypotheses, since this "
+            "run only validates the engine."
         ),
         "=" * 70,
     ]
@@ -204,6 +205,7 @@ def main() -> None:
         metrics=result.metrics,
         benchmark=benchmark,
         skipped_min_notional_count=result.skipped_min_notional_count,
+        period=f"{df['datetime'].iloc[0]} -> {df['datetime'].iloc[-1]}",
     )
 
     settings.RESULTS_DIR.mkdir(parents=True, exist_ok=True)

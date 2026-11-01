@@ -1,0 +1,50 @@
+# Оточення
+.env
+.venv
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Проект
+logs/
+*.log
+data/raw/*.csv
+data/processed/*.csv
+.DS_Store
+
+# Тестування
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE specific
+.vscode/
+.idea/
